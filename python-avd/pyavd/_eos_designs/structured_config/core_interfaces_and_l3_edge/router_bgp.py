@@ -44,7 +44,13 @@ class RouterBgpMixin(Protocol):
 
             # RFC5549
             if self.inputs.underlay_rfc5549 and p2p_link.routing_protocol != "ebgp":
-                self.structured_config.router_bgp.neighbor_interfaces.append_new(name=p2p_link_data["interface"], **neighbor._as_dict())
+                self.structured_config.router_bgp.neighbor_interfaces.append_new(
+                    name=p2p_link_data["interface"],
+                    remote_as=p2p_link_data["peer_bgp_as"],
+                    peer=p2p_link_data["peer"],
+                    description=p2p_link_data["peer"],
+                    peer_group=self.inputs.bgp_peer_groups.ipv4_underlay_peers.name,
+                )
                 continue
 
             # Regular BGP Neighbors
