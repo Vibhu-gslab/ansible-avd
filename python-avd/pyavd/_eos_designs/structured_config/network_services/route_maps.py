@@ -96,7 +96,7 @@ class RouteMapsMixin(Protocol):
 
     def _bgp_mlag_peer_group_route_map(self: AvdStructuredConfigNetworkServicesProtocol) -> None:
         """
-        Return dict with one route-map.
+        Set one route-map item.
 
         Origin Incomplete for MLAG iBGP learned routes.
 
@@ -113,7 +113,7 @@ class RouteMapsMixin(Protocol):
 
     def _connected_to_bgp_vrfs_route_map(self: AvdStructuredConfigNetworkServicesProtocol) -> None:
         """
-        Return dict with one route-map.
+        Set one route-map item.
 
         Filter MLAG peer subnets for redistribute connected for overlay VRFs.
         """
