@@ -24,7 +24,7 @@ class PrefixListsMixin(Protocol):
 
     @structured_config_contributor
     def prefix_lists(self: AvdStructuredConfigUnderlayProtocol) -> None:
-        """Return structured config for prefix_lists."""
+        """Set the structured config for prefix_lists."""
         if self.shared_utils.underlay_bgp is not True and not self.shared_utils.is_wan_router:
             return
 
