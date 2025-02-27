@@ -42,7 +42,7 @@ class PrefixListsMixin(Protocol):
             self.structured_config.prefix_lists.append_new(name="PL-MLAG-PEER-VRFS", sequence_numbers=sequence_numbers)
 
     def _set_prefix_lists_vrf_default(self: AvdStructuredConfigNetworkServicesProtocol) -> None:
-        """prefix_lists for EVPN services in VRF "default"."""
+        """Set the prefix_lists for EVPN services in VRF "default"."""
         if not self._vrf_default_evpn:
             return
 
