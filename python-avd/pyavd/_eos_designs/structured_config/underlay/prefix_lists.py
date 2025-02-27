@@ -92,7 +92,7 @@ class PrefixListsMixin(Protocol):
 
     @structured_config_contributor
     def ipv6_prefix_lists(self: AvdStructuredConfigUnderlayProtocol) -> None:
-        """Return structured config for IPv6 prefix_lists."""
+        """Set the structured config for IPv6 prefix_lists."""
         if self.shared_utils.underlay_bgp is not True:
             return
 
