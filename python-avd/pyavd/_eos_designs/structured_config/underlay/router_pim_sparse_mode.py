@@ -45,7 +45,7 @@ class RouterPimSparseModeMixin(Protocol):
                 continue
 
             # Anycast-RP using PIM (default)
+            other_anycast_rp_addresses = EosCliConfigGen.RouterPimSparseMode.Ipv4.AnycastRpsItem.OtherAnycastRpAddresses()
             for node in rp_entry.nodes:
-                self.structured_config.router_pim_sparse_mode.ipv4.anycast_rps.obtain(rp_entry.rp).other_anycast_rp_addresses.append_new(
-                    address=get(self.shared_utils.get_peer_facts(node.name), "router_id", required=True)
-                )
+                other_anycast_rp_addresses.append(EosCliConfigGen.RouterPimSparseMode.Ipv4.AnycastRpsItem.OtherAnycastRpAddressesItem(address=get(self.shared_utils.get_peer_facts(node.name), "router_id", required=True)))
+            self.structured_config.router_pim_sparse_mode.ipv4.anycast_rps.append_new(address=rp_entry.rp,other_anycast_rp_addresses=other_anycast_rp_addresses)
