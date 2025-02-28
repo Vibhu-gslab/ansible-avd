@@ -36,7 +36,7 @@ class RouterPimSparseModeMixin(Protocol):
                 if rp_entry.access_list_name:
                     rp_address.access_lists.append(rp_entry.access_list_name)
                 else:
-                    rp_address.groups.extend(rp._entry.groups)
+                    rp_address.groups.extend(rp_entry.groups)
 
             self.structured_config.router_pim_sparse_mode.ipv4.rp_addresses.append(rp_address)
 
