@@ -29,7 +29,7 @@ class PrefixListsMixin(Protocol):
 
         Covers EVPN services in VRF "default" and redistribution of connected to BGP
         """
-        # Get prefix-lists from EVPN services in VRF "default" (if any)
+        # Set prefix-lists from EVPN services in VRF "default" (if any)
         self._set_prefix_lists_vrf_default()
 
         # Add prefix-list for VRFs where MLAG iBGP peering should not be redistributed
@@ -46,19 +46,14 @@ class PrefixListsMixin(Protocol):
         if not self._vrf_default_evpn:
             return
 
-        subnets = self._vrf_default_ipv4_subnets
-        static_routes = self._vrf_default_ipv4_static_routes["static_routes"]
-        if not subnets and not static_routes:
-            return
-
-        if subnets:
+        if subnets := self._vrf_default_ipv4_subnets:
             sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
             for index, subnet in enumerate(subnets):
                 sequence = 10 * (index + 1)
                 sequence_numbers.append_new(sequence=sequence, action=f"permit {subnet}")
             self.structured_config.prefix_lists.append_new(name="PL-SVI-VRF-DEFAULT", sequence_numbers=sequence_numbers)
 
-        if static_routes:
+        if static_routes := self._vrf_default_ipv4_static_routes["static_routes"]:
             sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
             for index, static_route in enumerate(static_routes):
                 sequence = 10 * (index + 1)

@@ -25,10 +25,10 @@ class PrefixListsMixin(Protocol):
     @structured_config_contributor
     def prefix_lists(self: AvdStructuredConfigUnderlayProtocol) -> None:
         """Set the structured config for prefix_lists."""
-        if not self.shared_utils.is_wan_router and (not self.shared_utils.underlay_bgp or self.shared_utils.overlay_routing_protocol == "none"):
+        if not self.inputs.underlay_filter_redistribute_connected:
             return
 
-        if not self.inputs.underlay_filter_redistribute_connected:
+        if not self.shared_utils.is_wan_router and (not self.shared_utils.underlay_bgp or self.shared_utils.overlay_routing_protocol == "none"):
             return
 
         # IPv4 - PL-LOOPBACKS-EVPN-OVERLAY
@@ -43,8 +43,7 @@ class PrefixListsMixin(Protocol):
                 sequence_numbers.append_new(sequence=index * 10, action=f"permit {network} eq 32")
 
         if self.inputs.vtep_vvtep_ip is not None and self.shared_utils.network_services_l3 is True and not self.shared_utils.is_wan_router:
-            sequence_number = (len(sequence_numbers) + 1) * 10
-            sequence_numbers.append_new(sequence=sequence_number, action=f"permit {self.inputs.vtep_vvtep_ip}")
+            sequence_numbers.append_new(sequence=(len(sequence_numbers) + 1) * 10, action=f"permit {self.inputs.vtep_vvtep_ip}")
         self.structured_config.prefix_lists.append_new(name="PL-LOOPBACKS-EVPN-OVERLAY", sequence_numbers=sequence_numbers)
 
         if self.shared_utils.underlay_multicast_rp_interfaces is not None:
@@ -55,18 +54,18 @@ class PrefixListsMixin(Protocol):
 
         # For now only configure it with eBGP towards LAN.
         if self.shared_utils.wan_ha and self.shared_utils.use_uplinks_for_wan_ha and self.shared_utils.underlay_routing_protocol == "ebgp":
-            sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
-            for index, ip_address in enumerate(self.shared_utils.wan_ha_ip_addresses):
-                sequence_numbers.append_new(sequence=10 * (index + 1), action=f"permit {ipaddress.ip_network(ip_address, strict=False)}")
-            if sequence_numbers:
-                self.structured_config.prefix_lists.append_new(name="PL-WAN-HA-PREFIXES", sequence_numbers=sequence_numbers)
-
-            sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
-            for index, ip_address in enumerate(self.shared_utils.wan_ha_peer_ip_addresses):
-                sequence_numbers.append_new(sequence=10 * (index + 1), action=f"permit {ipaddress.ip_network(ip_address, strict=False)}")
-
-            if sequence_numbers:
-                self.structured_config.prefix_lists.append_new(name="PL-WAN-HA-PEER-PREFIXES", sequence_numbers=sequence_numbers)
+            if self.shared_utils.wan_ha_ip_addresses:
+                sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
+                for index, ip_address in enumerate(self.shared_utils.wan_ha_ip_addresses):
+                    sequence_numbers.append_new(sequence=10 * (index + 1), action=f"permit {ipaddress.ip_network(ip_address, strict=False)}")
+                if sequence_numbers:
+                    self.structured_config.prefix_lists.append_new(name="PL-WAN-HA-PREFIXES", sequence_numbers=sequence_numbers)
+            if self.shared_utils.wan_ha_peer_ip_addresses:
+                sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
+                for index, ip_address in enumerate(self.shared_utils.wan_ha_peer_ip_addresses):
+                    sequence_numbers.append_new(sequence=10 * (index + 1), action=f"permit {ipaddress.ip_network(ip_address, strict=False)}")
+                if sequence_numbers:
+                    self.structured_config.prefix_lists.append_new(name="PL-WAN-HA-PEER-PREFIXES", sequence_numbers=sequence_numbers)
 
         # P2P-LINKS needed for L3 inband ZTP
         sequence_number = 0
