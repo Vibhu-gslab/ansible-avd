@@ -44,6 +44,7 @@ class PrefixListsMixin(Protocol):
 
         if self.inputs.vtep_vvtep_ip is not None and self.shared_utils.network_services_l3 is True and not self.shared_utils.is_wan_router:
             sequence_numbers.append_new(sequence=(len(sequence_numbers) + 1) * 10, action=f"permit {self.inputs.vtep_vvtep_ip}")
+
         self.structured_config.prefix_lists.append_new(name="PL-LOOPBACKS-EVPN-OVERLAY", sequence_numbers=sequence_numbers)
 
         if self.shared_utils.underlay_multicast_rp_interfaces is not None:
