@@ -90,16 +90,10 @@ class PrefixListsMixin(Protocol):
     @structured_config_contributor
     def ipv6_prefix_lists(self: AvdStructuredConfigUnderlayProtocol) -> None:
         """Set the structured config for IPv6 prefix_lists."""
-        if self.shared_utils.underlay_bgp is not True:
-            return
-
-        if self.shared_utils.underlay_ipv6 is not True:
-            return
-
         if self.shared_utils.overlay_routing_protocol == "none" and not self.shared_utils.is_wan_router:
             return
 
-        if not self.inputs.underlay_filter_redistribute_connected:
+        if not self.inputs.underlay_filter_redistribute_connected or not self.shared_utils.underlay_bgp or not self.shared_utils.underlay_ipv6:
             return
 
         # IPv6 - PL-LOOPBACKS-EVPN-OVERLAY-V6
