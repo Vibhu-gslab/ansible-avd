@@ -57,8 +57,8 @@ class PrefixListsMixin(Protocol):
         if self.shared_utils.wan_ha and self.shared_utils.use_uplinks_for_wan_ha and self.shared_utils.underlay_routing_protocol == "ebgp":
             if self.shared_utils.wan_ha_ip_addresses:
                 sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
-                for index, ip_address in enumerate(self.shared_utils.wan_ha_ip_addresses):
-                    sequence_numbers.append_new(sequence=10 * (index + 1), action=f"permit {ipaddress.ip_network(ip_address, strict=False)}")
+                for index, ip_address in enumerate(self.shared_utils.wan_ha_ip_addresses, start=1):
+                    sequence_numbers.append_new(sequence=10 * index, action=f"permit {ipaddress.ip_network(ip_address, strict=False)}")
                 self.structured_config.prefix_lists.append_new(name="PL-WAN-HA-PREFIXES", sequence_numbers=sequence_numbers)
             if self.shared_utils.wan_ha_peer_ip_addresses:
                 sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
