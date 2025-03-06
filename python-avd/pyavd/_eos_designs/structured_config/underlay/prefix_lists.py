@@ -59,14 +59,12 @@ class PrefixListsMixin(Protocol):
                 sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
                 for index, ip_address in enumerate(self.shared_utils.wan_ha_ip_addresses):
                     sequence_numbers.append_new(sequence=10 * (index + 1), action=f"permit {ipaddress.ip_network(ip_address, strict=False)}")
-                if sequence_numbers:
-                    self.structured_config.prefix_lists.append_new(name="PL-WAN-HA-PREFIXES", sequence_numbers=sequence_numbers)
+                self.structured_config.prefix_lists.append_new(name="PL-WAN-HA-PREFIXES", sequence_numbers=sequence_numbers)
             if self.shared_utils.wan_ha_peer_ip_addresses:
                 sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
                 for index, ip_address in enumerate(self.shared_utils.wan_ha_peer_ip_addresses):
                     sequence_numbers.append_new(sequence=10 * (index + 1), action=f"permit {ipaddress.ip_network(ip_address, strict=False)}")
-                if sequence_numbers:
-                    self.structured_config.prefix_lists.append_new(name="PL-WAN-HA-PEER-PREFIXES", sequence_numbers=sequence_numbers)
+                self.structured_config.prefix_lists.append_new(name="PL-WAN-HA-PEER-PREFIXES", sequence_numbers=sequence_numbers)
 
         # P2P-LINKS needed for L3 inband ZTP
         sequence_number = 0
