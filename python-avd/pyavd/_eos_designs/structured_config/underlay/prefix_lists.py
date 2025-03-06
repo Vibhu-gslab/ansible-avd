@@ -49,8 +49,8 @@ class PrefixListsMixin(Protocol):
 
         if self.shared_utils.underlay_multicast_rp_interfaces is not None:
             sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
-            for index, interface in enumerate(self.shared_utils.underlay_multicast_rp_interfaces):
-                sequence_numbers.append_new(sequence=(index + 1) * 10, action=f"permit {interface.ip_address}")
+            for index, interface in enumerate(self.shared_utils.underlay_multicast_rp_interfaces, start=1):
+                sequence_numbers.append_new(sequence=index * 10, action=f"permit {interface.ip_address}")
             self.structured_config.prefix_lists.append_new(name="PL-LOOPBACKS-PIM-RP", sequence_numbers=sequence_numbers)
 
         # For now only configure it with eBGP towards LAN.
