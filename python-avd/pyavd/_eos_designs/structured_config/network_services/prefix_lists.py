@@ -35,9 +35,8 @@ class PrefixListsMixin(Protocol):
         # Add prefix-list for VRFs where MLAG iBGP peering should not be redistributed
         if mlag_prefixes := self._mlag_ibgp_peering_subnets_without_redistribution:
             sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
-            for index, mlag_prefix in enumerate(mlag_prefixes):
-                sequence = 10 * (index + 1)
-                sequence_numbers.append_new(sequence=sequence, action=f"permit {mlag_prefix}")
+            for index, mlag_prefix in enumerate(mlag_prefixes, start=1):
+                sequence_numbers.append_new(sequence=index * 10, action=f"permit {mlag_prefix}")
 
             self.structured_config.prefix_lists.append_new(name="PL-MLAG-PEER-VRFS", sequence_numbers=sequence_numbers)
 
@@ -48,16 +47,14 @@ class PrefixListsMixin(Protocol):
 
         if subnets := self._vrf_default_ipv4_subnets:
             sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
-            for index, subnet in enumerate(subnets):
-                sequence = 10 * (index + 1)
-                sequence_numbers.append_new(sequence=sequence, action=f"permit {subnet}")
+            for index, subnet in enumerate(subnets, start=1):
+                sequence_numbers.append_new(sequence=index * 10, action=f"permit {subnet}")
             self.structured_config.prefix_lists.append_new(name="PL-SVI-VRF-DEFAULT", sequence_numbers=sequence_numbers)
 
         if static_routes := self._vrf_default_ipv4_static_routes["static_routes"]:
             sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
-            for index, static_route in enumerate(static_routes):
-                sequence = 10 * (index + 1)
-                sequence_numbers.append_new(sequence=sequence, action=f"permit {static_route}")
+            for index, static_route in enumerate(static_routes, start=1):
+                sequence_numbers.append_new(sequence=index * 10, action=f"permit {static_route}")
             self.structured_config.prefix_lists.append_new(name="PL-STATIC-VRF-DEFAULT", sequence_numbers=sequence_numbers)
 
     @cached_property
