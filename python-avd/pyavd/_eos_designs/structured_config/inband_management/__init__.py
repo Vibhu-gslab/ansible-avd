@@ -47,6 +47,7 @@ class AvdStructuredConfigInbandManagement(StructuredConfigGenerator):
                 ipv6_address=self.shared_utils.inband_mgmt_ipv6_address,
                 type="inband_mgmt",
             )
+            return
         for vlan, subnet in self.shared_utils.inband_management_parent_vlans.items():
             self.structured_config.vlan_interfaces.append(self.get_parent_svi_cfg(vlan, subnet["ipv4"], subnet["ipv6"]))
 
