@@ -49,7 +49,7 @@ class AvdStructuredConfigInbandManagement(StructuredConfigGenerator):
             )
             return
         for vlan, subnet in self.shared_utils.inband_management_parent_vlans.items():
-            self.structured_config.vlan_interfaces.append(self.get_parent_svi_cfg(vlan, subnet["ipv4"], subnet["ipv6"]))
+            self.structured_config.vlan_interfaces.append(self.update_parent_svi_cfg(vlan, subnet["ipv4"], subnet["ipv6"]))
 
     @cached_property
     def _inband_mgmt_ipv6_parent(self) -> bool:
