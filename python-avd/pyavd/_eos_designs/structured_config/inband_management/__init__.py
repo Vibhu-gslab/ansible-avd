@@ -49,7 +49,7 @@ class AvdStructuredConfigInbandManagement(StructuredConfigGenerator):
             )
             return
         for vlan, subnet in self.shared_utils.inband_management_parent_vlans.items():
-            self.structured_config.vlan_interfaces.append(self.update_parent_svi_cfg(vlan, subnet["ipv4"], subnet["ipv6"]))
+            self.structured_config.vlan_interfaces.append(self.get_parent_svi_cfg(vlan, subnet["ipv4"], subnet["ipv6"]))
 
     @cached_property
     def _inband_mgmt_ipv6_parent(self) -> bool:
@@ -102,7 +102,7 @@ class AvdStructuredConfigInbandManagement(StructuredConfigGenerator):
         if self.shared_utils.node_config.virtual_router_mac_address is None:
             msg = "'virtual_router_mac_address' must be set for inband management parent."
             raise AristaAvdInvalidInputsError(msg)
-        self.structured_config.ip_virtual_router_mac_address = str(self.shared_utils.node_config.virtual_router_mac_address).lower()
+        self.structured_config.ip_virtual_router_mac_address = self.shared_utils.node_config.virtual_router_mac_address.lower()
 
     @structured_config_contributor
     def router_bgp(self) -> None:
@@ -128,8 +128,8 @@ class AvdStructuredConfigInbandManagement(StructuredConfigGenerator):
             return
 
         sequence_numbers = EosCliConfigGen.PrefixListsItem.SequenceNumbers()
-        for index, subnet in enumerate(self.shared_utils.inband_management_parent_vlans.values()):
-            sequence_numbers.append_new(sequence=(index + 1) * 10, action=f"permit {subnet['ipv4']}")
+        for index, subnet in enumerate(self.shared_utils.inband_management_parent_vlans.values(), start=1):
+            sequence_numbers.append_new(sequence=(index) * 10, action=f"permit {subnet['ipv4']}")
 
         self.structured_config.prefix_lists.append_new(name="PL-L2LEAF-INBAND-MGMT", sequence_numbers=sequence_numbers)
 
@@ -147,8 +147,8 @@ class AvdStructuredConfigInbandManagement(StructuredConfigGenerator):
             return
 
         sequence_numbers = EosCliConfigGen.Ipv6PrefixListsItem.SequenceNumbers()
-        for index, subnet in enumerate(self.shared_utils.inband_management_parent_vlans.values()):
-            sequence_numbers.append_new(sequence=(index + 1) * 10, action=f"permit {subnet['ipv6']}")
+        for index, subnet in enumerate(self.shared_utils.inband_management_parent_vlans.values(), start=1):
+            sequence_numbers.append_new(sequence=(index) * 10, action=f"permit {subnet['ipv6']}")
 
         self.structured_config.ipv6_prefix_lists.append_new(name="IPv6-PL-L2LEAF-INBAND-MGMT", sequence_numbers=sequence_numbers)
 
@@ -175,7 +175,7 @@ class AvdStructuredConfigInbandManagement(StructuredConfigGenerator):
 
         self.structured_config.route_maps.append_new(name="RM-CONN-2-BGP", sequence_numbers=sequence_numbers)
 
-    def update_parent_svi_cfg(self, vlan: int, subnet: str | None, ipv6_subnet: str | None) -> EosCliConfigGen.VlanInterfacesItem:
+    def get_parent_svi_cfg(self, vlan: int, subnet: str | None, ipv6_subnet: str | None) -> EosCliConfigGen.VlanInterfacesItem:
         svi = EosCliConfigGen.VlanInterfacesItem(
             name=f"Vlan{vlan}",
             description=self.shared_utils.node_config.inband_mgmt_description,
