@@ -175,7 +175,7 @@ class AvdStructuredConfigInbandManagement(StructuredConfigGenerator):
 
         self.structured_config.route_maps.append_new(name="RM-CONN-2-BGP", sequence_numbers=sequence_numbers)
 
-    def get_parent_svi_cfg(self, vlan: int, subnet: str | None, ipv6_subnet: str | None) -> EosCliConfigGen.VlanInterfacesItem:
+    def update_parent_svi_cfg(self, vlan: int, subnet: str | None, ipv6_subnet: str | None) -> EosCliConfigGen.VlanInterfacesItem:
         svi = EosCliConfigGen.VlanInterfacesItem(
             name=f"Vlan{vlan}",
             description=self.shared_utils.node_config.inband_mgmt_description,
